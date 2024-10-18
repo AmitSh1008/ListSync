@@ -1,0 +1,118 @@
+/* src/Components/ResponsiveMenu.css */
+.responsive-menu {
+  background-color: #2c3e50;
+  color: #fff;
+  height: 64px; /* Fixed height for the navbar */
+  display: flex;
+  align-items: center;
+}
+
+.menu-items {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  height: 100%;
+}
+
+.menu-items li {
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+}
+
+.menu-items a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+/* Mobile styles */
+.responsive-menu.mobile {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.responsive-menu.mobile .menu-toggle {
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #fff;
+}
+
+.responsive-menu.mobile .menu-overlay {
+  position: fixed;
+  top: 64px; /* Height of the navbar */
+  left: 0;
+  width: 100%;
+  height: calc(100% - 64px); /* Full height minus navbar height */
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 998;
+}
+
+.responsive-menu.mobile .menu-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.responsive-menu.mobile .menu {
+  position: fixed;
+  top: 64px; /* Height of the navbar */
+  right: -300px;
+  width: 300px;
+  height: calc(100% - 64px); /* Full height minus navbar height */
+  background-color: #2c3e50;
+  transition: right 0.3s ease;
+  z-index: 999;
+}
+
+.responsive-menu.mobile .menu.open {
+  right: 0;
+}
+
+.responsive-menu.mobile .menu-items {
+  flex-direction: column;
+  height: auto;
+}
+
+.responsive-menu.mobile .menu-items li {
+  width: 100%;
+  padding: 15px 20px;
+}
+
+/* RTL support */
+html[dir="rtl"] .responsive-menu.mobile .menu-toggle {
+  left: 20px;
+  right: auto;
+}
+
+html[dir="rtl"] .responsive-menu.mobile .menu {
+  left: -300px;
+  right: auto;
+}
+
+html[dir="rtl"] .responsive-menu.mobile .menu.open {
+  left: 0;
+  right: auto;
+}
+
+@media (min-width: 768px) {
+  .responsive-menu {
+    padding: 0 20px;
+  }
+
+  .menu-items {
+    justify-content: flex-end;
+  }
+}

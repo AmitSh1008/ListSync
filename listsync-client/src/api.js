@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'http://192.168.1.24:5000/api';
 
 // Register user
 export const registerUser = async (userData) => {
@@ -40,6 +40,19 @@ export const getUserLists = async (userId, token) => {
 export const createList = async (listData, token) => {
   try {
     const response = await axios.post(`${API_URL}/lists`, listData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : new Error('Server error');
+  }
+};
+
+export const getListDetails = async (listId, token) => {
+  try {
+    const response = await axios.get(`${API_URL}/lists/${listId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

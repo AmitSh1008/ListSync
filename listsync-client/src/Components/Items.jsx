@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { getListItems, createItem, patchItem, deleteItem } from '../api';
+import { Button, Form, Input, List, Modal, Typography, Card } from 'antd';
 
-const Items = ({ token, listId }) => {
+const { Title, Paragraph } = Typography;
+
+const Items = ({ token, listId, listName, listDescription }) => {
   const [items, setItems] = useState([]);
   const [itemName, setItemName] = useState('');
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
 
   // Fetch list items when component mounts
   useEffect(() => {
@@ -22,8 +27,7 @@ const Items = ({ token, listId }) => {
   }, [token, listId]);
 
   // Handle creating a new item
-  const handleCreateItem = async (e) => {
-    e.preventDefault();
+  const handleCreateItem = async () => {
     try {
       const newItem = await createItem({ list_id: listId, name: itemName }, token);
       setItems([...items, newItem]);
@@ -54,44 +58,87 @@ const Items = ({ token, listId }) => {
     }
   };
 
-  // Toggle item status
+  // Toggle item status (mark as done or not)
   const toggleItemStatus = async (item) => {
-    await handlePatchItem(item.id, 'status', !item.status);
+    try {
+      await handlePatchItem(item.id, 'status', !item.status);
+    } catch (error) {
+      alert('Error toggling item status');
+    }
+  };
+
+  // Handle editing item name
+  const handleEditItem = (item) => {
+    setEditingItem(item);
+    setIsModalVisible(true);
+  };
+
+  const handleEditConfirm = () => {
+    if (editingItem) {
+      handlePatchItem(editingItem.id, 'name', editingItem.name);
+    }
+    setIsModalVisible(false);
+    setEditingItem(null);
   };
 
   return (
-    <div>
-      <h2>Items in List</h2>
-      <form onSubmit={handleCreateItem}>
-        <input
-          type="text"
-          placeholder="New Item Name"
-          value={itemName}
-          onChange={(e) => setItemName(e.target.value)}
-          required
-        />
-        <button type="submit">Add Item</button>
-      </form>
-      <ul>
-        {items.map((item) => (
-          <li key={item.id}>
-            <span style={{ textDecoration: item.status ? 'line-through' : 'none' }}>
-              {item.name}
-            </span>
-            <button onClick={() => toggleItemStatus(item)}>
-              {item.status ? 'Unmark' : 'Mark as Done'}
-            </button>
-            <button
-              onClick={() =>
-                handlePatchItem(item.id, 'name', prompt('Update item name', item.name) || item.name)
-              }
+    <div className="container mt-4">
+      <Card className="mb-4" style={{ padding: '20px', backgroundColor: '#f9f9f9' }}>
+  <Title level={2}>{listName}</Title>
+  <Paragraph>{listDescription}</Paragraph>
+</Card>
+      <Card className="mb-4" style={{ padding: '20px' }}>
+        <Form layout="inline" onFinish={handleCreateItem} className="mb-4">
+          <Form.Item>
+            <Input
+              type="text"
+              placeholder="הכנס פריט"
+              value={itemName}
+              onChange={(e) => setItemName(e.target.value)}
+              required
+            />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              הוסף פריט
+            </Button>
+          </Form.Item>
+        </Form>
+        <List
+          bordered
+          dataSource={items}
+          renderItem={(item) => (
+            <List.Item
+              actions={[
+                <Button onClick={() => handleEditItem(item)}>ערוך</Button>,
+                <Button danger onClick={() => handleDeleteItem(item.id)}>
+                  מחק
+                </Button>,
+              ]}
             >
-              Edit Name
-            </button>
-            <button onClick={() => handleDeleteItem(item.id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+              <span
+                style={{ textDecoration: item.status ? 'line-through' : 'none', cursor: 'pointer' }}
+                onClick={() => toggleItemStatus(item)}
+              >
+                {item.name}
+              </span>
+            </List.Item>
+          )}
+        />
+      </Card>
+      <Modal
+        title="ערוך פריט"
+        visible={isModalVisible}
+        onOk={handleEditConfirm}
+        onCancel={() => setIsModalVisible(false)}
+      >
+        <Input
+          value={editingItem?.name}
+          onChange={(e) =>
+            setEditingItem((prev) => ({ ...prev, name: e.target.value }))
+          }
+        />
+      </Modal>
     </div>
   );
 };

@@ -18,6 +18,23 @@ const createList = async (req, res) => {
   }
 };
 
+// אחזור פרטי הרשימה לפי מזהה
+const getListDetails = async (req, res) => {
+    const { listId } = req.params;
+    try {
+      const list = await db.query('SELECT name, description FROM lists WHERE id = $1', [listId]);
+      if (list.rows.length > 0) {
+        console.log(list.rows[0]);
+        res.json(list.rows[0]);
+      } else {
+        res.status(404).json({ message: 'List not found' });
+      }
+    } catch (error) {
+      console.error('Error fetching list details:', error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  };
+
 // Get all lists for a user
 const getUserLists = async (req, res) => {
   const { userId } = req.params;
@@ -71,4 +88,4 @@ const deleteList = async (req, res) => {
   }
 };
 
-module.exports = { createList, getUserLists, updateList, deleteList };
+module.exports = { createList, getListDetails, getUserLists, updateList, deleteList };
