@@ -7,8 +7,8 @@ const createItem = async (req, res) => {
 
   try {
     const newItem = await db.query(
-      'INSERT INTO items (list_id, name, quantity, status) VALUES ($1, $2, $3, $4) RETURNING *',
-      [list_id, name, quantity || 1, status || false]
+      'INSERT INTO items (list_id, name, status) VALUES ($1, $2, $3) RETURNING *',
+      [list_id, name, status || false]
     );
 
     res.status(201).json(newItem.rows[0]);
@@ -20,26 +20,32 @@ const createItem = async (req, res) => {
 
 // Get all items in a list
 const getListItems = async (req, res) => {
-    const { listId } = req.params;
-  
-    try {
-      const listItems = await db.query('SELECT * FROM items WHERE list_id = $1', [listId]);
-      res.status(200).json(listItems.rows);
-    } catch (error) {
-      console.error('Error getting list items:', error);
-      res.status(500).json({ message: 'Server error' });
-    }
-  };
-
-// Update an item in a list
-const updateItem = async (req, res) => {
-  const { itemId } = req.params;
-  const { name, quantity, status } = req.body;
+  const { listId } = req.params;
 
   try {
+    const listItems = await db.query('SELECT * FROM items WHERE list_id = $1', [listId]);
+    res.status(200).json(listItems.rows);
+  } catch (error) {
+    console.error('Error getting list items:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Partially update an item in a list (PATCH)
+const patchItem = async (req, res) => {
+  const { itemId } = req.params;
+  const fields = req.body;
+
+  try {
+    const setString = Object.keys(fields)
+      .map((key, index) => `${key} = $${index + 1}`)
+      .join(', ');
+
+    const values = Object.values(fields);
+
     const updatedItem = await db.query(
-      'UPDATE items SET name = $1, quantity = $2, status = $3 WHERE id = $4 RETURNING *',
-      [name, quantity, status, itemId]
+      `UPDATE items SET ${setString} WHERE id = $${values.length + 1} RETURNING *`,
+      [...values, itemId]
     );
 
     if (updatedItem.rows.length === 0) {
@@ -71,4 +77,4 @@ const deleteItem = async (req, res) => {
   }
 };
 
-module.exports = { createItem, updateItem, deleteItem, getListItems };
+module.exports = { createItem, deleteItem, getListItems, patchItem };

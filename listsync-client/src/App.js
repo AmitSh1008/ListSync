@@ -1,23 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+// src/App.js
+import React, { useState } from 'react';
+import Register from './Components/Register';
+import Login from './Components/Login';
+import Lists from './Components/Lists';
 
 function App() {
+  const [token, setToken] = useState(null);
+  const [userId, setUserId] = useState(null);
+
+  const handleLogin = (token, userId) => {
+    setToken(token);
+    setUserId(userId);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {!token ? (
+        <>
+          <Register />
+          <Login setToken={(data) => handleLogin(data.token, data.userId)} />
+        </>
+      ) : (
+        <div>
+          <Lists token={token} userId={userId} />
+          <button onClick={() => { setToken(null); setUserId(null); }}>Logout</button>
+        </div>
+      )}
     </div>
   );
 }
