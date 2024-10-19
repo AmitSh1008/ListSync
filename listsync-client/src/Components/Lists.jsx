@@ -2,60 +2,96 @@ import React, { useState, useEffect } from "react";
 import { getUserLists, createList, getPartneredLists } from "../api";
 import ListContainer from "./ListContainer";
 import { Form, Input, Button, Typography, Layout } from "antd";
-import { PlusOutlined, UnorderedListOutlined, SearchOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  UnorderedListOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import "../Styles/Lists.css";
+import { useWebSocket } from '../WebSocketContext'; 
 
 const { Title, Paragraph } = Typography;
 const { Content, Sider } = Layout;
 
 // מערך של צבעים לשימוש עבור הרשימות
 const listColors = [
-  '#FFB3BA', '#BAFFC9', '#BAE1FF', '#FFFFBA', '#FFDFBA', 
-  '#E0BBE4', '#957DAD', '#D291BC', '#FEC8D8', '#FFDFD3'
+  "#FFB3BA",
+  "#BAFFC9",
+  "#BAE1FF",
+  "#FFFFBA",
+  "#FFDFBA",
+  "#E0BBE4",
+  "#957DAD",
+  "#D291BC",
+  "#FEC8D8",
+  "#FFDFD3",
 ];
 
 const Lists = ({ token, userId, userEmail }) => {
   const [lists, setLists] = useState([]);
   const [partneredLists, setPartneredLists] = useState([]);
   const [filteredLists, setFilteredLists] = useState([]);
+  const [filteredPartneredLists, setFilteredPartneredLists] = useState([]);
   const [selectedListId, setSelectedListId] = useState(null);
   const [selectedListColor, setSelectedListColor] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [form] = Form.useForm();
 
+  const ws = useWebSocket();
+
+  const fetchLists = async () => {
+    try {
+      const response = await getUserLists(userId, token);
+      setLists(response);
+      setFilteredLists(response);
+    } catch (error) {
+      alert("שגיאה בטעינת הרשימות");
+    }
+  };
+
+  const fetchPartneredLists = async () => {
+    try {
+      const response = await getPartneredLists(userEmail, token);
+      setPartneredLists(response);
+      setFilteredPartneredLists(response);
+    } catch (error) {
+      alert("שגיאה בטעינת רשימות משותפות");
+    }
+  };
+
   useEffect(() => {
-    const fetchLists = async () => {
-      try {
-        const response = await getUserLists(userId, token);
-        setLists(response);
-        setFilteredLists(response);
-      } catch (error) {
-        alert("שגיאה בטעינת הרשימות");
-      }
-    };
-
-    const fetchPartneredLists = async () => {
-      try {
-        const response = await getPartneredLists(userEmail, token);
-        setPartneredLists(response);
-      } catch (error) {
-        alert("שגיאה בטעינת רשימות משותפות");
-      }
-    };
-
     if (token) {
       fetchLists();
       fetchPartneredLists();
     }
   }, [token, userId, userEmail]);
 
+  // Handle WebSocket messages (if any)
   useEffect(() => {
-    const filtered = lists.filter(list => 
-      list.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      list.description.toLowerCase().includes(searchTerm.toLowerCase())
+    if (!ws) return;
+
+    ws.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      if (['partner_added', 'partnered_table_delete'].includes(message.changeType)) {
+        fetchPartneredLists(); // Re-fetch items when changes are detected
+      }
+    };
+  }, [ws, token]);
+
+  useEffect(() => {
+    const filteredList = lists.filter(
+      (list) =>
+        list.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        list.description.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    setFilteredLists(filtered);
-  }, [searchTerm, lists]);
+    setFilteredLists(filteredList);
+    const filteredPartnered = partneredLists.filter(
+      (list) =>
+        list.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        list.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredPartneredLists(filteredPartnered);
+  }, [searchTerm, lists, partneredLists]);
 
   const handleCreateList = async (values) => {
     try {
@@ -107,7 +143,12 @@ const Lists = ({ token, userId, userEmail }) => {
               <Input.TextArea placeholder="תיאור הרשימה" />
             </Form.Item>
             <Form.Item>
-              <Button type="primary" htmlType="submit" icon={<PlusOutlined />} block>
+              <Button
+                type="primary"
+                htmlType="submit"
+                icon={<PlusOutlined />}
+                block
+              >
                 צור רשימה חדשה
               </Button>
             </Form.Item>
@@ -118,7 +159,9 @@ const Lists = ({ token, userId, userEmail }) => {
               return (
                 <div
                   key={list.id}
-                  className={`list-menu-item ${selectedListId === list.id ? 'active' : ''}`}
+                  className={`list-menu-item ${
+                    selectedListId === list.id ? "active" : ""
+                  }`}
                   onClick={() => handleSelectList(list.id, color)}
                   style={{ backgroundColor: color }}
                 >
@@ -136,46 +179,44 @@ const Lists = ({ token, userId, userEmail }) => {
               );
             })}
           </div>
-          {partneredLists.length > 0 && (
-            <>
-              <Title level={4} className="lists-sider-title">
-                רשימות משותפות
-              </Title>
-              <div className="lists-menu">
-                {partneredLists.map((list, index) => {
-                  const color = listColors[index % listColors.length];
-                  return (
-                    <div
-                      key={list.id}
-                      className={`list-menu-item ${selectedListId === list.id ? 'active' : ''}`}
-                      onClick={() => handleSelectList(list.id, color)}
-                      style={{ backgroundColor: color }}
-                    >
-                      <Button
-                        icon={<UnorderedListOutlined />}
-                        block
-                        className="list-menu-item-button"
-                      >
-                        {list.name}
-                      </Button>
-                      <Paragraph className="list-menu-item-description">
-                        {list.description}
-                      </Paragraph>
-                    </div>
-                  );
-                })}
-              </div>
-            </>
-          )}
+          <div className="lists-menu">
+            <Title level={4} className="lists-sider-title">
+              רשימות משותפות
+            </Title>
+            {filteredPartneredLists.map((list, index) => {
+              const color = listColors[index % listColors.length];
+              return (
+                <div
+                  key={list.id}
+                  className={`list-menu-item ${
+                    selectedListId === list.id ? "active" : ""
+                  }`}
+                  onClick={() => handleSelectList(list.id, color)}
+                  style={{ backgroundColor: color }}
+                >
+                  <Button
+                    icon={<UnorderedListOutlined />}
+                    block
+                    className="list-menu-item-button"
+                  >
+                    {list.name}
+                  </Button>
+                  <Paragraph className="list-menu-item-description">
+                    {list.description}
+                  </Paragraph>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </Sider>
       <Content className="lists-content">
         {selectedListId ? (
-          <ListContainer 
-            token={token} 
-            listId={selectedListId} 
+          <ListContainer
+            token={token}
+            listId={selectedListId}
             listColor={selectedListColor}
-            onBack={() => setSelectedListId(null)} 
+            onBack={() => setSelectedListId(null)}
           />
         ) : (
           <div className="lists-welcome">

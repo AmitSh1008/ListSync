@@ -27,49 +27,71 @@ import {
 } from "@ant-design/icons";
 import { lightenColor } from "../Utils";
 import "../Styles/Items.css";
+import { useWebSocket } from '../WebSocketContext'; // Use the WebSocket context
 
 const { Title, Paragraph } = Typography;
 
-// Placeholder partners list
-const placeholderPartners = [
-  { id: 1, email: "partner1@example.com" },
-  { id: 2, email: "partner2@example.com" },
-  { id: 3, email: "partner3@example.com" },
-];
-
-const Items = ({ token, listId, listName, listDescription, listColor }) => {
+const Items = ({
+  token,
+  listId,
+  listName,
+  listDescription,
+  listColor,
+  userEmail,
+}) => {
   const [items, setItems] = useState([]);
-  const [partners, setPartners] = useState(placeholderPartners);
+  const [partners, setPartners] = useState([]);
   const [itemName, setItemName] = useState("");
   const [partnerEmail, setPartnerEmail] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isPartnerModalVisible, setIsPartnerModalVisible] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
 
+   // Access the WebSocket connection from context
+   const ws = useWebSocket();
+
+  // Fetch items function to be used in both places
+  const fetchItems = async () => {
+    try {
+      const response = await getListItems(listId, token);
+      setItems(response);
+    } catch (error) {
+      alert("Error fetching items");
+    }
+  };
+
+  const fetchPartners = async () => {
+    try {
+      const partnersData = await getListPartners(listId, token);
+      setPartners(partnersData);
+    } catch (error) {
+      alert("Error fetching partners");
+    }
+  };
+
+
+  // WebSocket connection setup
   useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        const response = await getListItems(listId, token);
-        setItems(response);
-      } catch (error) {
-        alert("Error fetching items");
-      }
-    };
-
-    const fetchPartners = async () => {
-      try {
-        const partnersData = await getListPartners(listId, token);
-        setPartners(partnersData);
-      } catch (error) {
-        alert("Error fetching partners");
-      }
-    };
-
     if (token) {
       fetchItems();
       fetchPartners();
     }
   }, [token, listId]);
+
+  // Handle WebSocket messages (if any)
+  useEffect(() => {
+    if (!ws) return;
+
+    ws.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      if (message.listId === listId && ['added', 'deleted', 'updated'].includes(message.changeType)) {
+        fetchItems(); // Re-fetch items when changes are detected
+      }
+      else if(message.listId === listId && message.changeType === 'partner_added') {
+        fetchPartners(); // Re-fetch partners when a new partner is added
+      }
+    };
+  }, [ws, listId, token]);
 
   const handleCreateItem = async () => {
     try {
@@ -182,22 +204,26 @@ const Items = ({ token, listId, listName, listDescription, listColor }) => {
         </div>
       </Card>
       <Card className="items-content-card">
-      <Form layout="inline" onFinish={handleCreateItem} className="items-form">
-  <Form.Item className="items-form-input">
-    <Input
-      type="text"
-      placeholder="הכנס פריט חדש"
-      value={itemName}
-      onChange={(e) => setItemName(e.target.value)}
-      required
-    />
-  </Form.Item>
-  <Form.Item className="button-container">
-    <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
-      הוסף
-    </Button>
-  </Form.Item>
-</Form>
+        <Form
+          layout="inline"
+          onFinish={handleCreateItem}
+          className="items-form"
+        >
+          <Form.Item className="items-form-input">
+            <Input
+              type="text"
+              placeholder="הכנס פריט חדש"
+              value={itemName}
+              onChange={(e) => setItemName(e.target.value)}
+              required
+            />
+          </Form.Item>
+          <Form.Item className="button-container">
+            <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
+              הוסף
+            </Button>
+          </Form.Item>
+        </Form>
         <List
           className="items-list"
           dataSource={items}
@@ -262,15 +288,3 @@ const Items = ({ token, listId, listName, listDescription, listColor }) => {
 };
 
 export default Items;
-
-// const handleAddPartner = async () => {
-//   try {
-//     await addPartner(listId, partnerEmail, token);
-//     const updatedPartners = await getListPartners(listId, token);
-//     setPartners(updatedPartners);
-//     setPartnerEmail('');
-//     setIsPartnerModalVisible(false);
-//   } catch (error) {
-//     alert('Error adding partner');
-//   }
-// };

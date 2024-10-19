@@ -1,5 +1,6 @@
 // controllers/partnersController.js
 const db = require('../config/db');
+const { notifyOwnerAndPartners } = require('../websocketHandler');
 
 // Add a partner to a list by email
 const addPartner = async (req, res) => {
@@ -11,6 +12,7 @@ const addPartner = async (req, res) => {
       [list_id, partner_email]
     );
     res.status(201).json(result.rows[0]);
+    notifyOwnerAndPartners(list_id, 'partner_added');
   } catch (error) {
     console.error('Error adding partner:', error);
     res.status(500).json({ message: 'Server error' });

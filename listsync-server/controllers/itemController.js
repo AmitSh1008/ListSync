@@ -1,5 +1,6 @@
 // controllers/itemController.js
 const db = require('../config/db');
+const { notifyOwnerAndPartners } = require('../websocketHandler');
 
 // Create a new item in a list
 const createItem = async (req, res) => {
@@ -12,6 +13,8 @@ const createItem = async (req, res) => {
     );
 
     res.status(201).json(newItem.rows[0]);
+    notifyOwnerAndPartners(list_id, 'added');
+
   } catch (error) {
     console.error('Error creating item:', error);
     res.status(500).json({ message: 'Server error' });
@@ -53,6 +56,9 @@ const patchItem = async (req, res) => {
     }
 
     res.status(200).json(updatedItem.rows[0]);
+    // Notify the owner and partners about the updated item
+    const listId = updatedItem.rows[0].list_id;
+    notifyOwnerAndPartners(listId, 'updated');
   } catch (error) {
     console.error('Error updating item:', error);
     res.status(500).json({ message: 'Server error' });
@@ -71,6 +77,7 @@ const deleteItem = async (req, res) => {
     }
 
     res.status(200).json({ message: 'Item deleted successfully' });
+    notifyOwnerAndPartners(deletedItem.rows[0].list_id, 'deleted');
   } catch (error) {
     console.error('Error deleting item:', error);
     res.status(500).json({ message: 'Server error' });

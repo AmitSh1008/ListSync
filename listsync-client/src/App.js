@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { WebSocketProvider } from './WebSocketContext'; // Import the WebSocket context provider
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import 'antd/dist/reset.css';
@@ -51,8 +52,14 @@ function App() {
                        : <Navigate to="/lists" replace />
               } />
               <Route path="/lists" element={
-                token ? <Lists token={token} userId={userId} userEmail={userEmail} />
-                      : <Navigate to="/" replace />
+                token ? (
+                  // Wrap the Lists component in WebSocketProvider to establish WebSocket connection after login
+                  <WebSocketProvider userEmail={userEmail}>
+                    <Lists token={token} userId={userId} userEmail={userEmail} />
+                  </WebSocketProvider>
+                ) : (
+                  <Navigate to="/" replace />
+                )
               } />
             </Routes>
           </main>

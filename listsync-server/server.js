@@ -2,10 +2,16 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const http = require('http'); // Needed for WebSocket handling
 const db = require('./config/db');
+const { handleUpgrade } = require('./websocketHandler'); // Import WebSocket handler
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const server = http.createServer(app); // Create HTTP server
+
+// Bind the HTTP server to a specific IP and port
+const IP_ADDRESS = '192.168.1.24'; // Your specific IP address
+const PORT = process.env.PORT || 5000; // Set the port from environment variable or default to 5000
 
 // Middleware
 app.use(express.json());
@@ -28,10 +34,14 @@ app.use('/api/lists', listRoutes);
 const itemRoutes = require('./routes/itemRoutes');
 app.use('/api/items', itemRoutes);
 
+// Partners Routes
 const partnersRoutes = require('./routes/partnerRoutes');
 app.use('/api/partners', partnersRoutes);
 
+// Upgrade server to handle WebSocket connections
+handleUpgrade(server);
+
 // Start Server
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+server.listen(PORT, IP_ADDRESS, () => {
+  console.log(`Server is listening on http://${IP_ADDRESS}:${PORT}`);
 });
