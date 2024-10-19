@@ -1,34 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import Items from './Items';
-import { getListDetails } from '../api'; // פונקציה שמביאה פרטי רשימה
+import { getListDetails } from '../api';
+import { Typography } from 'antd';
+import '../Styles/ListContainer.css';
 
-const ListContainer = ({ token, listId }) => {
+const { Title } = Typography;
+
+const ListContainer = ({ token, listId, listColor, onBack }) => {
   const [listDetails, setListDetails] = useState({ name: '', description: '' });
 
   useEffect(() => {
     const fetchListDetails = async () => {
       try {
-        // אחזור שם ותיאור הרשימה מהשרת
         const response = await getListDetails(listId, token);
-        console.log(response);
-        setListDetails(response); // שמירת שם ותיאור הרשימה בסטייט
+        setListDetails(response);
       } catch (error) {
         console.error('Error fetching list details:', error);
       }
     };
 
     if (token && listId) {
-      fetchListDetails(); // קריאה לפונקציה שמביאה את שם ותיאור הרשימה
+      fetchListDetails();
     }
   }, [token, listId]);
 
   return (
-    <Items
-      token={token}
-      listId={listId}
-      listName={listDetails.name}
-      listDescription={listDetails.description}
-    />
+    <div className="list-container">
+      <Items
+        token={token}
+        listId={listId}
+        listName={listDetails.name}
+        listDescription={listDetails.description}
+        listColor={listColor}
+      />
+    </div>
   );
 };
 

@@ -97,17 +97,17 @@ function Authentication(props) {
 
           <div className="panels-container">
             <div className="panel left-panel">
-              <div className="content">
-                <Title level={2}>חדש כאן?</Title>
-                <Paragraph>הצטרף אלינו ותתחיל את המסע שלך איתנו</Paragraph>
-                <Button onClick={toggleMode} className="auth-button-ghost">הרשם</Button>
+            <div className="content">
+                <Title level={2}>כבר רשום?</Title>
+                <Paragraph>התחבר כדי להמשיך את המסע שלך איתנו</Paragraph>
+                <Button onClick={toggleMode} className="auth-button-ghost">התחבר</Button>
               </div>
             </div>
             <div className="panel right-panel">
               <div className="content">
-                <Title level={2}>כבר רשום?</Title>
-                <Paragraph>התחבר כדי להמשיך את המסע שלך איתנו</Paragraph>
-                <Button onClick={toggleMode} className="auth-button-ghost">התחבר</Button>
+                <Title level={2}>חדש כאן?</Title>
+                <Paragraph>הצטרף אלינו ותתחיל את המסע שלך איתנו</Paragraph>
+                <Button onClick={toggleMode} className="auth-button-ghost">הרשם</Button>
               </div>
             </div>
           </div>

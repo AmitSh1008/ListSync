@@ -1,83 +1,96 @@
-.lists-page-container {
-    padding: 20px;
-    background: linear-gradient(to right, #1363df, #47b5ff);
-    min-height: 100vh;
-  }
-  
-  .lists-page-content {
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
-    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
-    padding: 40px;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  
-  .lists-page-title {
-    color: #176b87 !important;
-    text-align: center;
-    margin-bottom: 30px !important;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-  }
-  
-  .lists-create-form {
-    max-width: 600px;
-    margin: 0 auto 30px;
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .lists-grid {
-    margin-top: 20px;
-  }
-  
-  .lists-card {
-    height: 100%;
-    transition: all 0.3s ease;
-  }
-  
-  .lists-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2) !important;
-  }
-  
-  .lists-card .ant-card-head {
-    background-color: rgba(255, 255, 255, 0.7);
-    border-bottom: none;
-  }
-  
-  .lists-card .ant-card-head-title {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: #333;
-    font-weight: bold;
-  }
-  
-  .lists-card-description {
-    color: rgba(0, 0, 0, 0.75);
-  }
-  
-  .ant-btn-primary {
-    background-color: #176b87;
-    border-color: #176b87;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  }
-  
-  .ant-btn-primary:hover,
-  .ant-btn-primary:focus {
-    background-color: #0f4c5c;
-    border-color: #0f4c5c;
-  }
-  
-  .lists-card .ant-card-extra .ant-btn {
-    background-color: rgba(23, 107, 135, 0.8);
-    border-color: rgba(23, 107, 135, 0.8);
-  }
-  
-  .lists-card .ant-card-extra .ant-btn:hover {
-    background-color: rgba(15, 76, 92, 0.9);
-    border-color: rgba(15, 76, 92, 0.9);
-  }
+.lists-layout {
+  min-height: 100vh;
+}
+
+.lists-sider {
+  background-color: #f0f8ff;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.lists-sider-content {
+  padding: 20px;
+}
+
+.lists-sider-title {
+  color: #176b87;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.lists-search {
+  margin-bottom: 20px;
+}
+
+.lists-create-form {
+  margin-bottom: 20px;
+}
+
+.lists-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.list-menu-item {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.list-menu-item:hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.list-menu-item.active {
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  transform: translateY(-3px);
+}
+
+.list-menu-item-button {
+  text-align: right;
+  border: none;
+  background: none;
+  width: 100%;
+  padding: 10px;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.list-menu-item-description {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.6);
+  margin: 0 10px 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lists-content {
+  background: linear-gradient(135deg, #1363df, #47b5ff);
+  padding: 20px;
+}
+
+.lists-welcome {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  padding: 40px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.lists-welcome h2 {
+  color: #176b87;
+}
+
+.ant-btn-primary {
+  background-color: #176b87;
+  border-color: #176b87;
+}
+
+.ant-btn-primary:hover,
+.ant-btn-primary:focus {
+  background-color: #0f4c5c;
+  border-color: #0f4c5c;
+}

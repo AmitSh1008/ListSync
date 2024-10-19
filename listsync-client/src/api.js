@@ -118,3 +118,48 @@ export const deleteItem = async (itemId, token) => {
     throw error.response ? error.response.data : new Error('Server error');
   }
 };
+
+// Add a partner to a list by email
+export const addPartner = async (listId, partnerEmail, token) => {
+  try {
+    const response = await axios.post(`${API_URL}/partners`, 
+      { list_id: listId, partner_email: partnerEmail }, 
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : new Error('Server error');
+  }
+};
+
+// Get all partners of a list
+export const getListPartners = async (listId, token) => {
+  try {
+    const response = await axios.get(`${API_URL}/partners/${listId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : new Error('Server error');
+  }
+};
+
+// Get lists where the user is a partner
+export const getPartneredLists = async (userEmail, token) => {
+  try {
+    const response = await axios.get(`${API_URL}/partners/lists/${userEmail}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : new Error('Server error');
+  }
+};

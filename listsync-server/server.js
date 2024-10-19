@@ -28,6 +28,9 @@ app.use('/api/lists', listRoutes);
 const itemRoutes = require('./routes/itemRoutes');
 app.use('/api/items', itemRoutes);
 
+const partnersRoutes = require('./routes/partnerRoutes');
+app.use('/api/partners', partnersRoutes);
+
 // Start Server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

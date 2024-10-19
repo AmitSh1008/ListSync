@@ -1,6 +1,6 @@
 // routes/itemRoutes.js
 const express = require('express');
-const { createItem, patchItem, deleteItem, getListItems } = require('../controllers/itemController');
+const { createItem, patchItem, deleteItem, getListItems, addPartner, getListPartners } = require('../controllers/itemController');
 const router = express.Router();
 
 router.post('/', createItem); // יצירת פריט חדש ברשימה
