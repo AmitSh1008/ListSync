@@ -1,32 +1,41 @@
 .items-container {
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-  }
-  
-  .items-header-card {
-    background-color: rgba(23, 107, 135, 0.1);
-    border: none;
-    margin-bottom: 20px;
-  }
-  
-  .items-header-card .ant-card-body {
-    padding: 20px;
-  }
-  
-  .items-header-card h2 {
-    color: #176b87;
-    margin-bottom: 10px;
-  }
-  
-  .partners-section {
-    margin-top: 20px;
-  }
-  
-  .partners-section .ant-tag {
-    margin-bottom: 5px;
-  }
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+.items-header-card {
+  background-color: rgba(23, 107, 135, 0.1);
+  border: none;
+  margin-bottom: 20px;
+}
+
+.items-header-card .ant-card-body {
+  padding: 20px;
+}
+
+.items-header-card h2 {
+  color: #176b87;
+  margin-bottom: 10px;
+}
+
+.list-owner {
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+.list-owner h5 {
+  margin-bottom: 5px;
+}
+
+.partners-section {
+  margin-top: 20px;
+}
+
+.partners-section .ant-tag {
+  margin-bottom: 5px;
+}
   
   .items-content-card {
     background-color: white;
@@ -97,30 +106,18 @@
   .button-container {
     margin-top: 10px; /* Adds spacing between input and button */
   }
-
-  .delete-list-button {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    border-radius: 4px;
-    font-weight: bold;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease;
-  }
   
-  .delete-list-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  }
-  
-  /* Override Ant Design's danger button styles */
   .ant-btn-primary.ant-btn-dangerous {
     background-color: #ff4d4f;
     border-color: #ff4d4f;
-  }
-  
-  .ant-btn-primary.ant-btn-dangerous:hover,
-  .ant-btn-primary.ant-btn-dangerous:focus {
+}
+
+.ant-btn-primary.ant-btn-dangerous:hover,
+.ant-btn-primary.ant-btn-dangerous:focus {
     background-color: #ff7875;
     border-color: #ff7875;
-  }
+}
+
+.items-list {
+  margin-bottom: 20px; /* Add space below the list */
+}

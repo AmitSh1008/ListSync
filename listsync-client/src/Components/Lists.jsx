@@ -75,7 +75,6 @@ const Lists = ({ token, userId, userEmail }) => {
   //Handle WebSocket messages (if any)
   useEffect(() => {
     const handleListChange = (event) => {
-      console.log(event);
       const { listId: listID, changeType } = event.detail; // Extract listId and changeType from event.detail
       
       fetchPartneredLists();
@@ -119,7 +118,7 @@ const Lists = ({ token, userId, userEmail }) => {
       setLists([...lists, newList]);
       setFilteredLists([...filteredLists, newList]);
       form.resetFields();
-      //setSelectedListId(newList.id);
+      handleSelectList(newList.id, listColors[lists.length % listColors.length]);
     } catch (error) {
       alert("שגיאה ביצירת רשימה חדשה");
     }

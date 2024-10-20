@@ -12,18 +12,18 @@ function App() {
   const [token, setToken] = useState(localStorage.getItem('token') || null);
   const [userId, setUserId] = useState(localStorage.getItem('userId') || null);
   const [userEmail, setUserEmail] = useState(localStorage.getItem('userEmail') || null);
-  const [screenResolution, setScreenResolution] = useState('');
+  //const [screenResolution, setScreenResolution] = useState('');
 
-  useEffect(() => {
-    const updateResolution = () => {
-      setScreenResolution(`${window.innerWidth}x${window.innerHeight}`);
-    };
+  // useEffect(() => {
+  //   const updateResolution = () => {
+  //     setScreenResolution(`${window.innerWidth}x${window.innerHeight}`);
+  //   };
 
-    updateResolution();
-    window.addEventListener('resize', updateResolution);
+  //   updateResolution();
+  //   window.addEventListener('resize', updateResolution);
 
-    return () => window.removeEventListener('resize', updateResolution);
-  }, []);
+  //   return () => window.removeEventListener('resize', updateResolution);
+  // }, []);
 
   const handleLogin = (token, userId, userEmail) => {
     setToken(token);
@@ -48,9 +48,9 @@ function App() {
       <Router basename="/ListSyncWeb">
         <div className="app-container">
           <Navbar isLoggedIn={!!token} onLogout={handleLogout} />
-          <div className="resolution-display">
+          {/* <div className="resolution-display">
             רזולוציית מסך: {screenResolution}
-          </div>
+          </div> */}
           <main className="app-content">
             <Routes>
               <Route path="/" element={

@@ -23,9 +23,8 @@ const createList = async (req, res) => {
 const getListDetails = async (req, res) => {
     const { listId } = req.params;
     try {
-      const list = await db.query('SELECT name, description FROM lists WHERE id = $1', [listId]);
+      const list = await db.query('SELECT l.name, l.description, u.name AS creator_name FROM lists l JOIN users u ON l.user_id = u.id WHERE l.id = $1;', [listId]);
       if (list.rows.length > 0) {
-        console.log(list.rows[0]);
         res.json(list.rows[0]);
       } else {
         res.status(404).json({ message: 'List not found' });
@@ -84,10 +83,8 @@ const deleteList = async (req, res) => {
       [listId]
     );
     ownerEmail = ownerQuery.rows[0].owner_email;
-    console.log(ownerEmail);
     const partnerEmailsQuery = await db.query('SELECT partner_email FROM list_partners WHERE list_id = $1', [listId]);
     const partnerEmails = partnerEmailsQuery.rows.map((partner) => partner.partner_email);
-    console.log("deleted partners: " + partnerEmails);
     const deletedList = await db.query('DELETE FROM lists WHERE id = $1 RETURNING *', [listId]);
 
     if (deletedList.rows.length === 0) {

@@ -12,8 +12,6 @@ const sendMessageToUser = (userEmail, message) => {
   const userSocket = userConnections.get(userEmail);
   if (userSocket) {
     if (userSocket.readyState === WebSocket.OPEN) {
-      console.log(`sending ${message} to ${userEmail}...`);
-      console.log(message);
       userSocket.send(JSON.stringify(message));
     }
   }
@@ -37,7 +35,6 @@ const notifyOwnerAndPartners = async (
         [listId]
       );
       ownerEmail = ownerQuery.rows[0].owner_email;
-      console.log(ownerEmail);
     }
 
     if (emails.length === 0) {
@@ -48,7 +45,6 @@ const notifyOwnerAndPartners = async (
       emails = partnersQuery.rows.map(
         (partner) => partner.partner_email
       );
-      console.log(emails);
     }
     // Notify the owner
     sendMessageToUser(ownerEmail, { listId, changeType });
@@ -65,7 +61,6 @@ const notifyOwnerAndPartners = async (
 // This function will notify the owner and partners of the list
 const notifyUsers = async (emails, listId, changeType) => {
   try {
-    console.log("emails: ", emails);
     // Notify the partners
     emails.forEach((email) => {
       sendMessageToUser(email, { listId, changeType });

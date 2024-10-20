@@ -18,7 +18,6 @@ export const WebSocketProvider = ({ children, userEmail }) => {
 
     socket.onmessage = (event) => {
       const message = JSON.parse(event.data);
-      console.log('Received message:', message);
       if (['partner_added', 'partnered_table_delete'].includes(message.changeType)) {
         // Create a custom event and pass the message as detail
         const customEvent = new CustomEvent('ListChangeEvent', { detail: message });

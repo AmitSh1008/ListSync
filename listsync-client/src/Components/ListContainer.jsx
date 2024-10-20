@@ -10,7 +10,7 @@ import '../Styles/ListContainer.css';
 const { Title } = Typography;
 
 const ListContainer = ({ token, listId, listColor, onBack, onDeleteList, userEmail }) => {
-  const [listDetails, setListDetails] = useState({ name: '', description: '' });
+  const [listDetails, setListDetails] = useState({ name: '', description: '' , creator_name: ''});
 
   useEffect(() => {
     const fetchListDetails = async () => {
@@ -34,6 +34,7 @@ const ListContainer = ({ token, listId, listColor, onBack, onDeleteList, userEma
         listId={listId}
         listName={listDetails.name}
         listDescription={listDetails.description}
+        listOwner={listDetails.creator_name}
         listColor={listColor}
         userEmail={userEmail}
         onDeleteList={onDeleteList}

@@ -44,7 +44,6 @@ export const createList = async (listData, token) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log(response.data);
     return response.data;
   } catch (error) {
     throw error.response ? error.response.data : new Error('Server error');

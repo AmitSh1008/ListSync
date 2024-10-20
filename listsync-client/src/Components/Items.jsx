@@ -36,6 +36,7 @@ const Items = ({
   listId,
   listName,
   listDescription,
+  listOwner,
   listColor,
   userEmail,
   onDeleteList,
@@ -81,8 +82,6 @@ const Items = ({
   
   useEffect(() => {
     const handleItemChange = (event) => {
-      console.log(event);
-      console.log(listId);
       const { listId: listID, changeType } = event.detail;
 
       if (listID === listId) {  // Use event.detail instead of event.details
@@ -198,6 +197,14 @@ const Items = ({
           {listName}
         </Title>
         <Paragraph style={{ color: "black" }}>{listDescription}</Paragraph>
+        <div className="list-owner">
+          <Title level={5} style={{ color: "black", marginBottom: 5 }}>
+            נוצר על ידי:
+          </Title>
+          <Paragraph style={{ color: "black", fontWeight: "bold" }}>
+            {listOwner}
+          </Paragraph>
+        </div>
         <div className="partners-section">
           <Title level={4} style={{ color: "black" }}>
             שותפים:
@@ -276,7 +283,6 @@ const Items = ({
             danger
             icon={<DeleteOutlined />}
             onClick={() => onDeleteList(listId)}
-            className="delete-list-button"
           >
             מחק רשימה
           </Button>
