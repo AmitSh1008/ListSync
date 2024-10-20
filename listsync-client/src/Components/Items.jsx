@@ -27,7 +27,7 @@ import {
 } from "@ant-design/icons";
 import { lightenColor } from "../Utils";
 import "../Styles/Items.css";
-import { useWebSocket } from '../WebSocketContext'; // Use the WebSocket context
+import { useWebSocket } from "../WebSocketContext"; // Use the WebSocket context
 
 const { Title, Paragraph } = Typography;
 
@@ -38,6 +38,7 @@ const Items = ({
   listDescription,
   listColor,
   userEmail,
+  onDeleteList,
 }) => {
   const [items, setItems] = useState([]);
   const [partners, setPartners] = useState([]);
@@ -47,8 +48,8 @@ const Items = ({
   const [isPartnerModalVisible, setIsPartnerModalVisible] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
 
-   // Access the WebSocket connection from context
-   const ws = useWebSocket();
+  // Access the WebSocket connection from context
+  const ws = useWebSocket();
 
   // Fetch items function to be used in both places
   const fetchItems = async () => {
@@ -69,7 +70,6 @@ const Items = ({
     }
   };
 
-
   // WebSocket connection setup
   useEffect(() => {
     if (token) {
@@ -78,20 +78,29 @@ const Items = ({
     }
   }, [token, listId]);
 
-  // Handle WebSocket messages (if any)
+  
   useEffect(() => {
-    if (!ws) return;
+    const handleItemChange = (event) => {
+      console.log(event);
+      console.log(listId);
+      const { listId: listID, changeType } = event.detail;
 
-    ws.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      if (message.listId === listId && ['added', 'deleted', 'updated'].includes(message.changeType)) {
+      if (listID === listId) {  // Use event.detail instead of event.details
         fetchItems(); // Re-fetch items when changes are detected
-      }
-      else if(message.listId === listId && message.changeType === 'partner_added') {
-        fetchPartners(); // Re-fetch partners when a new partner is added
+        if (changeType === 'partner_added') {
+          fetchPartners();
+        }
       }
     };
-  }, [ws, listId, token]);
+
+    // Add the event listener
+    window.addEventListener('ItemChangeEvent', handleItemChange);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener('ItemChangeEvent', handleItemChange);
+    };
+  }, [listId]);
 
   const handleCreateItem = async () => {
     try {
@@ -158,6 +167,11 @@ const Items = ({
       message.error("Error adding partner");
     }
   };
+
+
+  function isOwner(userEmail) {
+    return (partners.find(partner => partner.partner_email === userEmail) || null) === null;
+  }
 
   // Lighten the header card color
   const headerCardColor = lightenColor(listColor, 0.2);
@@ -256,6 +270,17 @@ const Items = ({
             </List.Item>
           )}
         />
+        {isOwner(userEmail) ? (
+          <Button
+            type="primary"
+            danger
+            icon={<DeleteOutlined />}
+            onClick={() => onDeleteList(listId)}
+            className="delete-list-button"
+          >
+            מחק רשימה
+          </Button>
+        ) : <></>}
       </Card>
       <Modal
         title="ערוך פריט"

@@ -39,7 +39,7 @@ function App() {
 
   return (
     <ConfigProvider direction="rtl">
-      <Router>
+      <Router basename="/ListSyncWeb">
         <div className="app-container">
           <Navbar isLoggedIn={!!token} onLogout={handleLogout} />
           <div className="resolution-display">

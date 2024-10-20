@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { getUserLists, createList, getPartneredLists } from "../api";
+import {
+  getUserLists,
+  createList,
+  getPartneredLists,
+  deleteList,
+} from "../api";
 import ListContainer from "./ListContainer";
 import { Form, Input, Button, Typography, Layout } from "antd";
 import {
   PlusOutlined,
   UnorderedListOutlined,
   SearchOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
 import "../Styles/Lists.css";
-import { useWebSocket } from '../WebSocketContext'; 
+import { useWebSocket } from "../WebSocketContext";
 
 const { Title, Paragraph } = Typography;
 const { Content, Sider } = Layout;
@@ -66,17 +72,28 @@ const Lists = ({ token, userId, userEmail }) => {
     }
   }, [token, userId, userEmail]);
 
-  // Handle WebSocket messages (if any)
+  //Handle WebSocket messages (if any)
   useEffect(() => {
-    if (!ws) return;
-
-    ws.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      if (['partner_added', 'partnered_table_delete'].includes(message.changeType)) {
-        fetchPartneredLists(); // Re-fetch items when changes are detected
-      }
+    const handleListChange = (event) => {
+      console.log(event);
+      const { listId: listID, changeType } = event.detail; // Extract listId and changeType from event.detail
+      
+      fetchPartneredLists();
+      if (listID === selectedListId && changeType === "partnered_table_delete") {
+        setSelectedListId(null); // Clear selectedListId
+        setSelectedListColor(null); // Clear selectedListColor
+      } // Re-fetch partner lists when partner is added
     };
-  }, [ws, token]);
+
+    // Add the event listener
+    window.addEventListener('ListChangeEvent', handleListChange);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener('ListChangeEvent', handleListChange);
+    };
+  }, [selectedListId]);
+
 
   useEffect(() => {
     const filteredList = lists.filter(
@@ -102,6 +119,7 @@ const Lists = ({ token, userId, userEmail }) => {
       setLists([...lists, newList]);
       setFilteredLists([...filteredLists, newList]);
       form.resetFields();
+      //setSelectedListId(newList.id);
     } catch (error) {
       alert("שגיאה ביצירת רשימה חדשה");
     }
@@ -110,6 +128,21 @@ const Lists = ({ token, userId, userEmail }) => {
   const handleSelectList = (listId, color) => {
     setSelectedListId(listId);
     setSelectedListColor(color);
+  };
+
+  const handleDeleteList = async (listId) => {
+    try {
+      await deleteList(listId, token);
+      setLists(lists.filter((list) => list.id !== listId));
+      if (listId === selectedListId) {
+        setSelectedListId(null);
+        setSelectedListColor(null);
+      }
+    } catch (error) {
+      alert("Error deleting item");
+    }
+
+    // After deletion, you should update the lists state and reset selectedListId
   };
 
   return (
@@ -212,12 +245,16 @@ const Lists = ({ token, userId, userEmail }) => {
       </Sider>
       <Content className="lists-content">
         {selectedListId ? (
-          <ListContainer
-            token={token}
-            listId={selectedListId}
-            listColor={selectedListColor}
-            onBack={() => setSelectedListId(null)}
-          />
+          <>
+            <ListContainer
+              token={token}
+              listId={selectedListId}
+              listColor={selectedListColor}
+              onBack={() => setSelectedListId(null)}
+              onDeleteList={handleDeleteList}
+              userEmail={userEmail}
+            />
+          </>
         ) : (
           <div className="lists-welcome">
             <Title level={2}>ברוכים הבאים לניהול הרשימות שלך</Title>

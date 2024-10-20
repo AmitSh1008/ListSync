@@ -4,7 +4,7 @@ const { notifyOwnerAndPartners } = require('../websocketHandler');
 
 // Create a new item in a list
 const createItem = async (req, res) => {
-  const { list_id, name, quantity, status } = req.body;
+  const { list_id, name, status } = req.body;
 
   try {
     const newItem = await db.query(

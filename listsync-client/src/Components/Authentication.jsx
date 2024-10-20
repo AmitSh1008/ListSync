@@ -13,15 +13,15 @@ function Authentication(props) {
 
   // Default values for sign-up form
   const signUpInitialValues = {
-    name: 'Amit',
-    email: 'blah@gmail.com',
-    password: 'Amitla100806'
+    name: '',
+    email: '',
+    password: ''
   };
 
   // Default values for sign-in form
   const signInInitialValues = {
-    email: 'amit@gmail.com',
-    password: 'Amitla100806',
+    email: '',
+    password: '',
   };
 
   const handleSignIn = async (values) => {

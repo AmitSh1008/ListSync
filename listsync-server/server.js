@@ -10,12 +10,19 @@ const app = express();
 const server = http.createServer(app); // Create HTTP server
 
 // Bind the HTTP server to a specific IP and port
-const IP_ADDRESS = '192.168.1.24'; // Your specific IP address
+const IP_ADDRESS = 'http://shilmanamit1008.ddns.net'; // Your specific IP address
 const PORT = process.env.PORT || 5000; // Set the port from environment variable or default to 5000
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+// handling CORS
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, Authorization,, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Private-Network: true");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE,OPTIONS"); // Add OPTIONS method
+  next();
+});
 
 // Basic Route for Testing
 app.get('/', (req, res) => {
@@ -42,6 +49,6 @@ app.use('/api/partners', partnersRoutes);
 handleUpgrade(server);
 
 // Start Server
-server.listen(PORT, IP_ADDRESS, () => {
-  console.log(`Server is listening on http://${IP_ADDRESS}:${PORT}`);
+server.listen(PORT, () => {
+  console.log(`Server is listening on ${IP_ADDRESS}:${PORT}`);
 });

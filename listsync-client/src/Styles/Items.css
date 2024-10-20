@@ -97,3 +97,30 @@
   .button-container {
     margin-top: 10px; /* Adds spacing between input and button */
   }
+
+  .delete-list-button {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    border-radius: 4px;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+  }
+  
+  .delete-list-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Override Ant Design's danger button styles */
+  .ant-btn-primary.ant-btn-dangerous {
+    background-color: #ff4d4f;
+    border-color: #ff4d4f;
+  }
+  
+  .ant-btn-primary.ant-btn-dangerous:hover,
+  .ant-btn-primary.ant-btn-dangerous:focus {
+    background-color: #ff7875;
+    border-color: #ff7875;
+  }

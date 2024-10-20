@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import Items from './Items';
 import { getListDetails } from '../api';
-import { Typography } from 'antd';
+import { Typography, Button } from 'antd';
+import {
+  DeleteOutlined
+} from "@ant-design/icons";
 import '../Styles/ListContainer.css';
 
 const { Title } = Typography;
 
-const ListContainer = ({ token, listId, listColor, onBack }) => {
+const ListContainer = ({ token, listId, listColor, onBack, onDeleteList, userEmail }) => {
   const [listDetails, setListDetails] = useState({ name: '', description: '' });
 
   useEffect(() => {
@@ -32,6 +35,8 @@ const ListContainer = ({ token, listId, listColor, onBack }) => {
         listName={listDetails.name}
         listDescription={listDetails.description}
         listColor={listColor}
+        userEmail={userEmail}
+        onDeleteList={onDeleteList}
       />
     </div>
   );

@@ -1,5 +1,6 @@
 // controllers/listController.js
 const db = require('../config/db');
+const { notifyOwnerAndPartners } = require('../websocketHandler');
 
 // Create a new list
 const createList = async (req, res) => {
@@ -72,9 +73,21 @@ const updateList = async (req, res) => {
 
 // Delete a list
 const deleteList = async (req, res) => {
-  const { listId } = req.params;
+  const listId = parseInt(req.params.listId);
 
   try {
+    const ownerQuery = await db.query(
+      `SELECT users.email AS owner_email 
+        FROM lists 
+        JOIN users ON lists.user_id = users.id 
+        WHERE lists.id = $1`,
+      [listId]
+    );
+    ownerEmail = ownerQuery.rows[0].owner_email;
+    console.log(ownerEmail);
+    const partnerEmailsQuery = await db.query('SELECT partner_email FROM list_partners WHERE list_id = $1', [listId]);
+    const partnerEmails = partnerEmailsQuery.rows.map((partner) => partner.partner_email);
+    console.log("deleted partners: " + partnerEmails);
     const deletedList = await db.query('DELETE FROM lists WHERE id = $1 RETURNING *', [listId]);
 
     if (deletedList.rows.length === 0) {
@@ -82,6 +95,7 @@ const deleteList = async (req, res) => {
     }
 
     res.status(200).json({ message: 'List deleted successfully' });
+    notifyOwnerAndPartners(listId, 'partnered_table_delete', partnerEmails, ownerEmail);
   } catch (error) {
     console.error('Error deleting list:', error);
     res.status(500).json({ message: 'Server error' });

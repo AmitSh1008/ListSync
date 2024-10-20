@@ -10,7 +10,7 @@ export const WebSocketProvider = ({ children, userEmail }) => {
     if (!userEmail) return;
 
     // Open WebSocket connection after login
-    const socket = new WebSocket(`ws://192.168.1.24:5000?user=${userEmail}`);
+    const socket = new WebSocket(`ws://shilmanamit1008.ddns.net:5001?user=${userEmail}`);
 
     socket.onopen = () => {
       console.log('WebSocket connection established');
@@ -19,7 +19,18 @@ export const WebSocketProvider = ({ children, userEmail }) => {
     socket.onmessage = (event) => {
       const message = JSON.parse(event.data);
       console.log('Received message:', message);
-      // You can dispatch events or handle the messages globally here
+      if (['partner_added', 'partnered_table_delete'].includes(message.changeType)) {
+        // Create a custom event and pass the message as detail
+        const customEvent = new CustomEvent('ListChangeEvent', { detail: message });
+        window.dispatchEvent(customEvent); // Dispatch the event globally
+        if (message.changeType === 'partner_added') {
+          const customEvent = new CustomEvent('ItemChangeEvent', { detail: message });
+          window.dispatchEvent(customEvent);  // Dispatch the event globally
+        }
+      } else if (['added', 'deleted', 'updated'].includes(message.changeType)) {
+        const customEvent = new CustomEvent('ItemChangeEvent', { detail: message });
+        window.dispatchEvent(customEvent);  // Dispatch the event globally
+      }
     };
 
     socket.onclose = () => {
