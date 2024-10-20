@@ -9,9 +9,9 @@ import Lists from './Components/Lists';
 import Navbar from './Components/Navbar';
 
 function App() {
-  const [token, setToken] = useState(null);
-  const [userId, setUserId] = useState(null);
-  const [userEmail, setUserEmail] = useState('');
+  const [token, setToken] = useState(localStorage.getItem('token') || null);
+  const [userId, setUserId] = useState(localStorage.getItem('userId') || null);
+  const [userEmail, setUserEmail] = useState(localStorage.getItem('userEmail') || null);
   const [screenResolution, setScreenResolution] = useState('');
 
   useEffect(() => {
@@ -29,12 +29,18 @@ function App() {
     setToken(token);
     setUserId(userId);
     setUserEmail(userEmail);
+    localStorage.setItem('token', token);
+    localStorage.setItem('userId', userId);
+    localStorage.setItem('userEmail', userEmail);
   };
 
   const handleLogout = () => {
     setToken(null);
     setUserId(null);
     setUserEmail('');
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userEmail');
   };
 
   return (
